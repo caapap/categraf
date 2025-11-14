@@ -5,7 +5,6 @@
 # enabled: 是否启用此监控实例
 #   - false（默认）：监控和代理端口都不会启动，完全禁用
 #   - true：启用监控和代理功能，需要配置 ollama_url
-# ️默认值为 false，必须显式设置为 true 才会生效
 enabled = false
 
 # Ollama 后端服务地址
@@ -28,7 +27,7 @@ interval = "15s"
 [instances.labels]
 service = "ollama"
 env = "production"
-region = "beijing"
+region = "hefei"
 
 # ============================================================================
 # 使用说明

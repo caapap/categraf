@@ -28,7 +28,7 @@
 ```toml
 [[instances]]
 # Ollama 后端地址(实际的 Ollama 服务地址，可以是本地也可以是远程)
-ollama_url = "http://172.31.101.238:11434"
+ollama_url = "http://localhost:11434"
 
 # 代理监听地址(代理监听地址，即categraf ollama开启节点端口，默认本地的:11435)
 proxy_listen_addr = ":11435"
