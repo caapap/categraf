@@ -1,55 +1,57 @@
-# Spark Streaming Exporter Plugin Configuration
-# Collects metrics from Spark Streaming applications running on YARN
+# Spark Streaming 监控插件配置
+# 从运行在 YARN 上的 Spark Streaming 应用中采集指标
 
 [[instances]]
-# YARN ResourceManager address (required)
-# Format: "hostname:port"
-yarn_address = "172.29.242.68:8088"
+# YARN ResourceManager 地址（必填）
+# 格式: "hostname:port" 或 "ip:port"
+yarn_address = ""
+#yarn_address = "localhost:8088"
 
-# YARN API path (optional, default: /ws/v1/cluster/apps)
+# YARN API 路径（可选，默认: /ws/v1/cluster/apps）
 yarn_app_api_path = "/ws/v1/cluster/apps"
 
-# Application name prefixes to monitor (optional)
-# If empty or not set, all running applications will be monitored
-# Multiple prefixes are supported
-app_prefixes = [
-    "dhzp-strategy",
-    "dhzp-asynclean",
-    "dhzp-recognition",
-    "dhzp-schedule",
-    "dhzp-keywords"
-]
+# 要监控的应用名称前缀列表（可选）
+# 匹配规则：
+#   - 如果为空数组 []，则监控所有运行中的应用
+#   - 如果设置了前缀，只监控应用名称以这些前缀开头的应用
+#   - 支持多个前缀，应用名称匹配任意一个前缀即可
+#   - 前缀匹配是大小写敏感的
+# 示例：
+#   app_prefixes = ["dhzp-", "schedule-"]  # 监控以 "dhzp-" 或 "spark-streaming-" 开头的应用
+#   app_prefixes = []  # 监控所有应用
+app_prefixes = []
 
-# HTTP timeout for API requests (optional, default: 10s)
+# HTTP 请求超时时间（可选，默认: 10s）
 timeout = "10s"
 
-# Maximum concurrent application scraping (optional, default: 10)
-# Controls how many Spark applications are scraped in parallel
+# 最大并发采集数（可选，默认: 10）
+# 控制同时采集多少个 Spark 应用的指标
 max_concurrency = 10
 
-# Skip TLS certificate verification (optional, default: false)
+# 跳过 TLS 证书验证（可选，默认: false）
+# 设置为 true 时，将跳过 HTTPS 连接的证书验证（仅用于测试环境）
 skip_verify = false
 
-# Collection interval (optional, default: from global config)
-# How often to collect metrics
+# 采集间隔（可选，默认: 使用全局配置）
+# 指标采集的频率
 interval = "60s"
 
-# Kerberos authentication (optional, not yet implemented)
+# Kerberos 认证（可选，暂未实现）
 # kerberos_enabled = false
 # kerberos_principal = "yarn@EXAMPLE.COM"
 # kerberos_keytab_path = "/etc/security/keytabs/yarn.keytab"
 
-# Custom labels to add to all metrics (optional)
+# 自定义标签，会添加到所有指标中（可选）
 [instances.labels]
 cluster = "production"
 region = "beijing"
 env = "prod"
 datacenter = "dc1"
 
-## Example: Multiple YARN clusters monitoring
+## 示例：监控多个 YARN 集群
 #[[instances]]
 #yarn_address = "10.130.1.118:8088"
-#app_prefixes = ["dhzp-"]
+#app_prefixes = ["dhzp-"]  # 只监控以 "dhzp-" 开头的应用
 #interval = "60s"
 #
 #[instances.labels]
@@ -57,45 +59,45 @@ datacenter = "dc1"
 #region = "shanghai"
 #env = "staging"
 
-## Collected Metrics:
+## 采集的指标说明：
 ## 
-## 1. yarn_up
-##    Description: YARN ResourceManager connection status (1=up, 0=down)
-##    Labels: yarn_address
+## 1. spark_streaming_yarn_up
+##    说明: YARN ResourceManager 连接状态（1=正常，0=异常）
+##    标签: yarn_address
 ##
-## 2. yarn_run_app
-##    Description: Running Spark Streaming application (constant value: 1)
-##    Labels: app_id, app_name, state, final_status, user, queue
+## 2. spark_streaming_yarn_run_app
+##    说明: 运行中的 Spark Streaming 应用（常量值: 1）
+##    标签: app_id, app_name, state, final_status, user, queue
 ##
-## 3. input_rate_records_avg_stat
-##    Description: Average input record rate (records/sec)
-##    Labels: app_id, app_name
+## 3. spark_streaming_input_rate_records_avg_stat
+##    说明: 平均输入记录速率（records/sec）
+##    标签: app_id, app_name
 ##
-## 4. batches_scheduling_delay_avg_stat
-##    Description: Average batch scheduling delay (milliseconds)
-##    Labels: app_id, app_name
+## 4. spark_streaming_batches_scheduling_delay_avg_stat
+##    说明: 平均批次调度延迟（毫秒）
+##    标签: app_id, app_name
 ##
-## 5. batches_processing_time_avg_stat
-##    Description: Average batch processing time (milliseconds)
-##    Labels: app_id, app_name
+## 5. spark_streaming_batches_processing_time_avg_stat
+##    说明: 平均批次处理时间（毫秒）
+##    标签: app_id, app_name
 ##
-## 6. batches_total_delay_avg_stat
-##    Description: Average total batch delay (milliseconds)
-##    Labels: app_id, app_name
+## 6. spark_streaming_batches_total_delay_avg_stat
+##    说明: 平均总批次延迟（毫秒）
+##    标签: app_id, app_name
 ##
-## 7. running_batches_current_num
-##    Description: Number of currently running batches
-##    Labels: app_id, app_name
+## 7. spark_streaming_running_batches_current_num
+##    说明: 当前正在运行的批次数量
+##    标签: app_id, app_name
 ##
-## 8. waiting_batches_current_num
-##    Description: Number of currently waiting batches
-##    Labels: app_id, app_name
+## 8. spark_streaming_waiting_batches_current_num
+##    说明: 当前等待中的批次数量
+##    标签: app_id, app_name
 ##
-## 9. completed_batches_current_num
-##    Description: Number of completed batches
-##    Labels: app_id, app_name
+## 9. spark_streaming_completed_batches_current_num
+##    说明: 已完成的批次数量
+##    标签: app_id, app_name
 ##
-## 10. scrape_error
-##     Description: Scraping error indicator (1=error, only present on error)
-##     Labels: app_id, app_name
+## 10. spark_streaming_scrape_error
+##     说明: 采集错误指示器（1=错误，仅在出错时出现）
+##     标签: app_id, app_name
 

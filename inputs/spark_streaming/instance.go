@@ -2,7 +2,6 @@ package spark_streaming
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -40,9 +39,11 @@ type Instance struct {
 }
 
 func (ins *Instance) Init() error {
-	// Validate required configuration
+	// If yarn_address is empty, skip initialization silently
+	// This allows the plugin to be disabled by leaving the address empty
 	if ins.YARNAddress == "" {
-		return fmt.Errorf("yarn_address is required")
+		log.Printf("I! [spark_streaming] yarn_address is empty, skipping initialization")
+		return nil
 	}
 
 	// Set defaults
@@ -90,8 +91,8 @@ func (ins *Instance) Init() error {
 }
 
 func (ins *Instance) Gather(slist *types.SampleList) {
+	// Skip gathering if not initialized (yarn_address is empty)
 	if !ins.initialized {
-		log.Printf("W! [spark_streaming] Instance not initialized")
 		return
 	}
 
