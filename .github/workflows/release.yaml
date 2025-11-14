@@ -38,6 +38,37 @@ jobs:
           registry: swr.cn-east-3.myhuaweicloud.com
           username: ${{ secrets.HUAWEI_SWR_USERNAME }}
           password: ${{ secrets.HUAWEI_SWR_PASSWORD }}
+      - name: Delete old release assets (if exists)
+        run: |
+          # 获取 Release ID 和资源文件
+          RELEASE_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/caapap/categraf/releases/tags/${{ github.ref_name }}")
+          
+          RELEASE_ID=$(echo "$RELEASE_RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('id', ''))" 2>/dev/null || echo "")
+          
+          if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "None" ]; then
+            echo "Found release ID: $RELEASE_ID, deleting old assets..."
+            # 获取所有资源文件
+            ASSETS_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/caapap/categraf/releases/$RELEASE_ID/assets")
+            
+            # 使用 Python 提取所有资源文件 ID
+            ASSET_IDS=$(echo "$ASSETS_RESPONSE" | python3 -c "import sys, json; assets = json.load(sys.stdin); [print(asset['id']) for asset in assets]" 2>/dev/null || echo "")
+            
+            # 删除每个资源文件
+            if [ -n "$ASSET_IDS" ]; then
+              for ASSET_ID in $ASSET_IDS; do
+                echo "Deleting asset ID: $ASSET_ID"
+                curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                  "https://api.github.com/repos/caapap/categraf/releases/assets/$ASSET_ID" || true
+              done
+              echo "Old assets deleted successfully"
+            else
+              echo "No assets found in release"
+            fi
+          else
+            echo "No existing release found, skipping asset deletion"
+          fi
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
