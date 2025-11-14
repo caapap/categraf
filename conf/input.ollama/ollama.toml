@@ -1,0 +1,179 @@
+# Ollama 监控插件配置
+# 采用纯被动采集模式：作为 HTTP 代理拦截所有 Ollama API 请求
+
+[[instances]]
+# Ollama 后端服务地址
+ollama_url = "http://172.31.101.238:11434"
+
+# 代理监听地址（客户端需要连接到这个地址）
+proxy_listen_addr = ":8000"
+
+# HTTP 超时时间
+timeout = "30s"
+
+# 采集间隔（推送指标到后端的频率）
+interval = "15s"
+
+# 自定义标签
+[instances.labels]
+service = "ollama"
+env = "production"
+region = "beijing"
+
+# 说明：
+# 1. 客户端需要将请求发送到 proxy_listen_addr（默认 :8000）
+# 2. 插件会自动将请求转发到 ollama_url
+# 3. 所有请求指标（Token、响应时间等）都会被记录
+# 4. 每隔 interval 时间，指标会被推送到 Categraf 的后端
+# 5. 同时暴露 /metrics 端点兼容 Prometheus 格式
+
+# ============================================================================
+# 指标清单（Metrics List）
+# ============================================================================
+# 
+# 本插件采集的所有指标都会推送到 Categraf 配置的后端（星相平台/Prometheus）
+# 所有指标都包含以下标签：
+#   - model: 模型名称（如 "qwen2.5:0.5b"）
+#   - service: 服务标识（来自 instances.labels.service）
+#   - env: 环境标识（来自 instances.labels.env）
+#   - region: 区域标识（来自 instances.labels.region）
+#   - 其他自定义标签（来自 instances.labels）
+#
+# ----------------------------------------------------------------------------
+# 1. 请求计数指标（Counter）
+# ----------------------------------------------------------------------------
+# ollama_requests_total{model="xxx", ...}
+#   类型: Counter
+#   说明: 总请求数（包括成功和失败）
+#   标签: model, service, env, region, ...
+#
+# ollama_requests_success{model="xxx", ...}
+#   类型: Counter
+#   说明: 成功请求数
+#   标签: model, service, env, region, ...
+#
+# ollama_requests_failed{model="xxx", ...}
+#   类型: Counter
+#   说明: 失败请求数
+#   标签: model, service, env, region, ...
+#
+# ----------------------------------------------------------------------------
+# 2. Token 指标（Counter）
+# ----------------------------------------------------------------------------
+# ollama_tokens_generated_total{model="xxx", ...}
+#   类型: Counter
+#   说明: 生成的 Token 总数（响应中的 Token 数）
+#   标签: model, service, env, region, ...
+#   单位: tokens
+#
+# ollama_prompt_tokens_total{model="xxx", ...}
+#   类型: Counter
+#   说明: Prompt Token 总数（输入中的 Token 数）
+#   标签: model, service, env, region, ...
+#   单位: tokens
+#
+# ----------------------------------------------------------------------------
+# 3. 响应时间指标（Gauge）
+# ----------------------------------------------------------------------------
+# ollama_response_duration_seconds{model="xxx", quantile="0.5", ...}
+#   类型: Gauge
+#   说明: 响应时间（P50 百分位数）
+#   标签: model, quantile="0.5", service, env, region, ...
+#   单位: 秒
+#
+# ollama_response_duration_seconds{model="xxx", quantile="0.95", ...}
+#   类型: Gauge
+#   说明: 响应时间（P95 百分位数）
+#   标签: model, quantile="0.95", service, env, region, ...
+#   单位: 秒
+#
+# ollama_response_duration_seconds{model="xxx", quantile="0.99", ...}
+#   类型: Gauge
+#   说明: 响应时间（P99 百分位数）
+#   标签: model, quantile="0.99", service, env, region, ...
+#   单位: 秒
+#
+# ollama_response_duration_seconds{model="xxx", quantile="avg", ...}
+#   类型: Gauge
+#   说明: 平均响应时间
+#   标签: model, quantile="avg", service, env, region, ...
+#   单位: 秒
+#
+# ollama_response_duration_seconds{model="xxx", quantile="min", ...}
+#   类型: Gauge
+#   说明: 最小响应时间
+#   标签: model, quantile="min", service, env, region, ...
+#   单位: 秒
+#
+# ollama_response_duration_seconds{model="xxx", quantile="max", ...}
+#   类型: Gauge
+#   说明: 最大响应时间
+#   标签: model, quantile="max", service, env, region, ...
+#   单位: 秒
+#
+# ----------------------------------------------------------------------------
+# 4. 模型加载时间指标（Gauge）
+# ----------------------------------------------------------------------------
+# ollama_model_load_duration_seconds{model="xxx", quantile="0.5", ...}
+#   类型: Gauge
+#   说明: 模型加载时间（P50 百分位数）
+#   标签: model, quantile="0.5", service, env, region, ...
+#   单位: 秒
+#   说明: 从请求开始到模型加载完成的时间
+#
+# ollama_model_load_duration_seconds{model="xxx", quantile="0.95", ...}
+#   类型: Gauge
+#   说明: 模型加载时间（P95 百分位数）
+#   标签: model, quantile="0.95", service, env, region, ...
+#   单位: 秒
+#
+# ollama_model_load_duration_seconds{model="xxx", quantile="avg", ...}
+#   类型: Gauge
+#   说明: 平均模型加载时间
+#   标签: model, quantile="avg", service, env, region, ...
+#   单位: 秒
+#
+# ============================================================================
+# 指标使用示例（PromQL）
+# ============================================================================
+#
+# 1. 计算请求成功率：
+#    rate(ollama_requests_success[5m]) / rate(ollama_requests_total[5m]) * 100
+#
+# 2. 计算错误率：
+#    rate(ollama_requests_failed[5m]) / rate(ollama_requests_total[5m]) * 100
+#
+# 3. 计算平均 Token 生成速率（tokens/秒）：
+#    rate(ollama_tokens_generated_total[5m])
+#
+# 4. 计算平均响应时间（最近 5 分钟）：
+#    ollama_response_duration_seconds{quantile="avg"}
+#
+# 5. 计算 P95 响应时间：
+#    ollama_response_duration_seconds{quantile="0.95"}
+#
+# 6. 按模型统计请求数：
+#    sum by (model) (rate(ollama_requests_total[5m]))
+#
+# 7. 计算 Token 效率（生成 Token / 总 Token）：
+#    rate(ollama_tokens_generated_total[5m]) / 
+#    (rate(ollama_tokens_generated_total[5m]) + rate(ollama_prompt_tokens_total[5m]))
+#
+# ============================================================================
+# 告警规则示例
+# ============================================================================
+#
+# 1. 响应时间过长告警：
+#    ollama_response_duration_seconds{quantile="0.95"} > 10
+#
+# 2. 错误率过高告警：
+#    rate(ollama_requests_failed[5m]) / rate(ollama_requests_total[5m]) > 0.1
+#
+# 3. 请求量异常告警：
+#    rate(ollama_requests_total[5m]) == 0  # 5 分钟内无请求
+#
+# 4. 模型加载时间过长告警：
+#    ollama_model_load_duration_seconds{quantile="0.95"} > 5
+#
+# ============================================================================
+

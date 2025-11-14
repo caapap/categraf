@@ -1,7 +1,8 @@
 module flashcat.cloud/categraf
 
-go 1.21
-toolchain go1.24.1
+go 1.23.0
+
+toolchain go1.24.10
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137
@@ -48,9 +49,9 @@ require (
 	go.opentelemetry.io/otel/metric v1.18.0 // indirect
 	go.opentelemetry.io/otel/trace v1.18.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/net v0.38.0
-	golang.org/x/sys v0.31.0
-	golang.org/x/text v0.23.0
+	golang.org/x/net v0.39.0
+	golang.org/x/sys v0.32.0
+	golang.org/x/text v0.24.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
@@ -67,6 +68,7 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.0 // indirect
 	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
 	github.com/aliyun/credentials-go v1.2.6 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/awnumar/memcall v0.2.0 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.22 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.28 // indirect
@@ -128,6 +130,7 @@ require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
 	github.com/NVIDIA/go-dcgm v0.0.0-20240118201113-3385e277e49f
 	github.com/NVIDIA/go-nvml v0.12.0-2
+	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/alibabacloud-go/cms-20190101/v8 v8.0.0
 	github.com/alibabacloud-go/cms-export-20211101/v2 v2.0.0
@@ -332,11 +335,11 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/goleak v1.2.0 // indirect
-	golang.org/x/crypto v0.36.0
+	golang.org/x/crypto v0.37.0
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
-	golang.org/x/sync v0.12.0
-	golang.org/x/term v0.30.0 // indirect
+	golang.org/x/sync v0.13.0
+	golang.org/x/term v0.31.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/api v0.149.0

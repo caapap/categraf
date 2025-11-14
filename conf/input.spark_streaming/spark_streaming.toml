@@ -1,0 +1,101 @@
+# Spark Streaming Exporter Plugin Configuration
+# Collects metrics from Spark Streaming applications running on YARN
+
+[[instances]]
+# YARN ResourceManager address (required)
+# Format: "hostname:port"
+yarn_address = "172.29.242.68:8088"
+
+# YARN API path (optional, default: /ws/v1/cluster/apps)
+yarn_app_api_path = "/ws/v1/cluster/apps"
+
+# Application name prefixes to monitor (optional)
+# If empty or not set, all running applications will be monitored
+# Multiple prefixes are supported
+app_prefixes = [
+    "dhzp-strategy",
+    "dhzp-asynclean",
+    "dhzp-recognition",
+    "dhzp-schedule",
+    "dhzp-keywords"
+]
+
+# HTTP timeout for API requests (optional, default: 10s)
+timeout = "10s"
+
+# Maximum concurrent application scraping (optional, default: 10)
+# Controls how many Spark applications are scraped in parallel
+max_concurrency = 10
+
+# Skip TLS certificate verification (optional, default: false)
+skip_verify = false
+
+# Collection interval (optional, default: from global config)
+# How often to collect metrics
+interval = "60s"
+
+# Kerberos authentication (optional, not yet implemented)
+# kerberos_enabled = false
+# kerberos_principal = "yarn@EXAMPLE.COM"
+# kerberos_keytab_path = "/etc/security/keytabs/yarn.keytab"
+
+# Custom labels to add to all metrics (optional)
+[instances.labels]
+cluster = "production"
+region = "beijing"
+env = "prod"
+datacenter = "dc1"
+
+## Example: Multiple YARN clusters monitoring
+#[[instances]]
+#yarn_address = "10.130.1.118:8088"
+#app_prefixes = ["dhzp-"]
+#interval = "60s"
+#
+#[instances.labels]
+#cluster = "staging"
+#region = "shanghai"
+#env = "staging"
+
+## Collected Metrics:
+## 
+## 1. yarn_up
+##    Description: YARN ResourceManager connection status (1=up, 0=down)
+##    Labels: yarn_address
+##
+## 2. yarn_run_app
+##    Description: Running Spark Streaming application (constant value: 1)
+##    Labels: app_id, app_name, state, final_status, user, queue
+##
+## 3. input_rate_records_avg_stat
+##    Description: Average input record rate (records/sec)
+##    Labels: app_id, app_name
+##
+## 4. batches_scheduling_delay_avg_stat
+##    Description: Average batch scheduling delay (milliseconds)
+##    Labels: app_id, app_name
+##
+## 5. batches_processing_time_avg_stat
+##    Description: Average batch processing time (milliseconds)
+##    Labels: app_id, app_name
+##
+## 6. batches_total_delay_avg_stat
+##    Description: Average total batch delay (milliseconds)
+##    Labels: app_id, app_name
+##
+## 7. running_batches_current_num
+##    Description: Number of currently running batches
+##    Labels: app_id, app_name
+##
+## 8. waiting_batches_current_num
+##    Description: Number of currently waiting batches
+##    Labels: app_id, app_name
+##
+## 9. completed_batches_current_num
+##    Description: Number of completed batches
+##    Labels: app_id, app_name
+##
+## 10. scrape_error
+##     Description: Scraping error indicator (1=error, only present on error)
+##     Labels: app_id, app_name
+
