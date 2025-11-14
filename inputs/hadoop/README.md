@@ -44,10 +44,25 @@ realm = "EXAMPLE.COM"
 
 每个组件的配置通过 `[[components]]` 块定义。以下是支持的组件及其配置示例。
 
+**重要提示**：每个组件都需要显式设置 `enabled = true` 才会启用监控。如果不需要监控某个组件，请设置 `enabled = false` 或注释掉整个 `[[components]]` 块。
+
+### 配置项说明
+
+- **`enabled`**：是否启用此组件的监控，默认为 `false`（必须显式设置为 `true` 才会生效）
+- **`name`**：组件名称，用于标识组件
+- **`port`**：组件的 JMX 端口号
+- **`processName`**：进程名称，用于判断该组件是否在当前机器上运行
+- **`allowRecursiveParse`**：是否递归解析 JMX 返回的嵌套 JSON 数据
+- **`allowMetricsWhiteList`**：是否启用指标白名单过滤
+- **`jmxUrlSuffix`**：JMX URL 后缀，通常为 `/jmx`
+- **`white_list`**：需要采集的指标名称列表
+
 ### 1. Yarn ResourceManager
 
 ```toml
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "YarnResourceManager"
 port = 8088
 processName = "org.apache.hadoop.yarn.server.resourcemanager.ResourceManager"
@@ -66,6 +81,8 @@ white_list = [
 
 ```toml
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "YarnNodeManager"
 port = 8042
 processName = "Dproc_nodemanager"
@@ -84,6 +101,8 @@ white_list = [
 
 ```toml
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "HadoopNameNode"
 port = 50070
 processName = "org.apache.hadoop.hdfs.server.namenode.NameNode"
@@ -102,6 +121,8 @@ white_list = [
 
 ```toml
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "HadoopDataNode"
 port = 1022
 processName = "Dproc_datanode"
@@ -128,9 +149,10 @@ white_list = [
 
 ## 使用方法
 
-1. **配置白名单**：在 `white_list` 中添加需要采集的指标名称。不需要采集的指标可以注释掉。
-2. **动态采集**：插件会根据 `processName` 自动判断是否需要采集该组件的指标。
-3. **递归解析**：如果需要采集嵌套的 JSON 数据，可以开启 `allowRecursiveParse`。
+1. **启用组件**：将需要监控的组件的 `enabled` 字段设置为 `true`。默认情况下所有组件都是禁用的（`enabled = false`）。
+2. **配置白名单**：在 `white_list` 中添加需要采集的指标名称。不需要采集的指标可以注释掉。
+3. **动态采集**：插件会根据 `processName` 自动判断是否需要采集该组件的指标。如果进程不存在，插件会自动跳过该组件。
+4. **递归解析**：如果需要采集嵌套的 JSON 数据，可以开启 `allowRecursiveParse`。
 
 ---
 
@@ -150,6 +172,8 @@ kerberosConfigPath = "/path/to/krb5.conf"
 realm = "EXAMPLE.COM"
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = true  # 启用 YarnResourceManager 监控
 name = "YarnResourceManager"
 port = 8088
 processName = "org.apache.hadoop.yarn.server.resourcemanager.ResourceManager"
@@ -163,6 +187,8 @@ white_list = [
 ]
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = true  # 启用 YarnNodeManager 监控
 name = "YarnNodeManager"
 port = 8042
 processName = "Dproc_nodemanager"
@@ -176,6 +202,8 @@ white_list = [
 ]
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = true  # 启用 HadoopNameNode 监控
 name = "HadoopNameNode"
 port = 50070
 processName = "org.apache.hadoop.hdfs.server.namenode.NameNode"
@@ -189,6 +217,8 @@ white_list = [
 ]
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = true  # 启用 HadoopDataNode 监控
 name = "HadoopDataNode"
 port = 1022
 processName = "Dproc_datanode"

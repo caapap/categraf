@@ -4,11 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/emirpasic/gods/lists/singlylinkedlist"
-	"github.com/jcmturner/gokrb5/v8/client"
-	kconfig "github.com/jcmturner/gokrb5/v8/config"
-	"github.com/jcmturner/gokrb5/v8/keytab"
-	"github.com/jcmturner/gokrb5/v8/spnego"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -17,9 +12,16 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/emirpasic/gods/lists/singlylinkedlist"
+	"github.com/jcmturner/gokrb5/v8/client"
+	kconfig "github.com/jcmturner/gokrb5/v8/config"
+	"github.com/jcmturner/gokrb5/v8/keytab"
+	"github.com/jcmturner/gokrb5/v8/spnego"
 )
 
 type ComponentOption struct {
+	Enabled               bool     `toml:"enabled"`
 	ProcessName           string   `toml:"processName"`
 	Port                  int      `toml:"port"`
 	Name                  string   `toml:"name"`

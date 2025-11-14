@@ -12,7 +12,12 @@ kerberosConfigPath = "/path/to/krb5.conf"
 realm = "EXAMPLE.COM"
 
 # 组件配置
+# 每个组件都需要显式设置 enabled = true 才会启用监控
+# 如果不需要监控某个组件，请设置 enabled = false 或注释掉整个 [[components]] 块
+
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "YarnResourceManager"
 port = 8088
 processName = "org.apache.hadoop.yarn.server.resourcemanager.ResourceManager"
@@ -180,6 +185,8 @@ white_list = [
 
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "YarnNodeManager"
 port = 8042
 processName = "Dproc_nodemanager"
@@ -232,6 +239,8 @@ white_list = [
 
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "HadoopNameNode"
 port = 50070
 processName = "org.apache.hadoop.hdfs.server.namenode.NameNode"
@@ -380,6 +389,8 @@ white_list = [
 
 
 [[components]]
+# 是否启用此组件的监控，默认为 false（必须显式设置为 true 才会生效）
+enabled = false
 name = "HadoopDataNode"
 port = 1022
 processName = "Dproc_datanode"

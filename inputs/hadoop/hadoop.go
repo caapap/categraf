@@ -1,11 +1,11 @@
 package hadoop
 
 import (
-	"errors"
 	"fmt"
-	"github.com/emirpasic/gods/lists/singlylinkedlist"
 	"log"
 	"sync"
+
+	"github.com/emirpasic/gods/lists/singlylinkedlist"
 
 	"flashcat.cloud/categraf/config"
 	"flashcat.cloud/categraf/inputs"
@@ -48,12 +48,19 @@ func (j *Hadoop) Name() string {
 
 func (ins *Hadoop) Init() error {
 	if len(ins.Components) == 0 {
-		return errors.New("no components configured")
+		log.Printf("I! [hadoop] no components configured, skipping initialization")
+		return nil
 	}
 
 	ins.components = singlylinkedlist.New()
 
 	for _, componentOption := range ins.Components {
+		// 跳过未启用的组件
+		if !componentOption.Enabled {
+			log.Printf("I! [hadoop] component %s is disabled, skipping", componentOption.Name)
+			continue
+		}
+
 		c := &Component{
 			ComponentOption: componentOption,
 		}
