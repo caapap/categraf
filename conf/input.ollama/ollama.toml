@@ -2,11 +2,21 @@
 # 采用纯被动采集模式：作为 HTTP 代理拦截所有 Ollama API 请求
 
 [[instances]]
+# enabled: 是否启用此监控实例
+#   - false（默认）：监控和代理端口都不会启动，完全禁用
+#   - true：启用监控和代理功能，需要配置 ollama_url
+# ️默认值为 false，必须显式设置为 true 才会生效
+enabled = false
+
 # Ollama 后端服务地址
-ollama_url = "http://172.31.101.238:11434"
+# 必填项（当 enabled=true 时）：请填写实际的 Ollama 服务地址
+# 示例：如果 Ollama 运行在本地，使用 "http://localhost:11434"
+ollama_url = "http://localhost:11434"
 
 # 代理监听地址（客户端需要连接到这个地址）
-proxy_listen_addr = ":8000"
+# 只有当 enabled=true 时，此端口才会开放
+# 默认值：":11435"
+proxy_listen_addr = ":11435"
 
 # HTTP 超时时间
 timeout = "30s"
@@ -20,12 +30,18 @@ service = "ollama"
 env = "production"
 region = "beijing"
 
-# 说明：
-# 1. 客户端需要将请求发送到 proxy_listen_addr（默认 :8000）
-# 2. 插件会自动将请求转发到 ollama_url
-# 3. 所有请求指标（Token、响应时间等）都会被记录
-# 4. 每隔 interval 时间，指标会被推送到 Categraf 的后端
-# 5. 同时暴露 /metrics 端点兼容 Prometheus 格式
+# ============================================================================
+# 使用说明
+# ============================================================================
+# 1. 默认情况下（enabled=false），此插件不会启动，不会占用任何端口
+# 2. 要启用监控，请设置 enabled = true，并确保 ollama_url 配置正确
+# 3. 客户端需要将请求发送到 proxy_listen_addr（默认 :11435）
+# 4. 插件会自动将请求转发到 ollama_url
+# 5. 所有请求指标（Token、响应时间等）都会被记录
+# 6. 每隔 interval 时间，指标会被推送到 Categraf 的后端
+# 7. 同时暴露 /metrics 端点兼容 Prometheus 格式
+#
+# ============================================================================
 
 # ============================================================================
 # 指标清单（Metrics List）

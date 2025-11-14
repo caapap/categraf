@@ -14,7 +14,7 @@
 ## 工作原理
 
 ```
-客户端 → Categraf Ollama Plugin (:8000) → Ollama Backend (:11434)
+客户端 → Categraf Ollama Plugin (:11435) → Ollama Backend (:11434)
               ↓
          采集指标
               ↓
@@ -27,11 +27,11 @@
 
 ```toml
 [[instances]]
-# Ollama 后端地址
+# Ollama 后端地址(实际的 Ollama 服务地址，可以是本地也可以是远程)
 ollama_url = "http://172.31.101.238:11434"
 
-# 代理监听地址
-proxy_listen_addr = ":8000"
+# 代理监听地址(代理监听地址，即categraf ollama开启节点端口，默认本地的:11435)
+proxy_listen_addr = ":11435"
 
 # HTTP 超时
 timeout = "30s"
@@ -50,7 +50,7 @@ env = "production"
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | `ollama_url` | string | `http://localhost:11434` | Ollama 后端服务地址 |
-| `proxy_listen_addr` | string | `:8000` | 代理监听地址 |
+| `proxy_listen_addr` | string | `:11435` | 代理监听地址 |
 | `timeout` | duration | `30s` | HTTP 请求超时时间 |
 | `interval` | duration | `15s` | 指标推送间隔 |
 | `labels` | map | - | 自定义标签 |
@@ -95,7 +95,7 @@ make build
 vim conf/input.ollama/ollama.toml
 
 # 修改 ollama_url 为实际的 Ollama 后端地址
-# 修改 proxy_listen_addr 为代理监听地址（默认 :8000）
+# 修改 proxy_listen_addr 为代理监听地址（默认 :11435）
 ```
 
 ### 3. 运行
@@ -117,7 +117,7 @@ vim conf/input.ollama/ollama.toml
 export OLLAMA_HOST=http://172.31.101.238:11434
 
 # 现在
-export OLLAMA_HOST=http://localhost:8000
+export OLLAMA_HOST=http://localhost:11435
 ```
 
 或在代码中：
@@ -127,7 +127,7 @@ export OLLAMA_HOST=http://localhost:8000
 client = ollama.Client(host='http://172.31.101.238:11434')
 
 # 现在
-client = ollama.Client(host='http://localhost:8000')
+client = ollama.Client(host='http://localhost:11435')
 ```
 
 ## API 端点
@@ -149,23 +149,23 @@ client = ollama.Client(host='http://localhost:8000')
 
 ```bash
 # Prometheus 格式
-curl http://localhost:8000/metrics
+curl http://localhost:11435/metrics
 
 # 健康检查
-curl http://localhost:8000/health
+curl http://localhost:11435/health
 ```
 
 ### 测试代理功能
 
 ```bash
 # 通过代理调用 Ollama
-curl http://localhost:8000/api/generate -d '{
+curl http://localhost:11435/api/generate -d '{
   "model": "qwen2.5:0.5b",
   "prompt": "Why is the sky blue?"
 }'
 
 # 查看指标是否更新
-curl http://localhost:8000/metrics | grep ollama_requests_total
+curl http://localhost:11435/metrics | grep ollama_requests_total
 ```
 
 ## 监控面板
@@ -222,7 +222,7 @@ curl http://localhost:8000/metrics | grep ollama_requests_total
 
 ```bash
 # 检查端口是否被占用
-netstat -tlnp | grep 8000
+netstat -tlnp | grep 11435
 
 # 查看日志
 tail -f logs/categraf.log | grep ollama
@@ -245,7 +245,7 @@ vim conf/input.ollama/ollama.toml
 ./categraf --test --inputs ollama
 
 # 检查是否有请求通过代理
-curl http://localhost:8000/metrics
+curl http://localhost:11435/metrics
 ```
 
 ## 性能考虑

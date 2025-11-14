@@ -15,7 +15,8 @@ type Instance struct {
 	config.InstanceConfig
 
 	// Ollama 配置
-	OllamaURL       string          `toml:"ollama_url"`
+	Enabled         bool            `toml:"enabled"`    // 是否启用此实例，默认为 false
+	OllamaURL       string          `toml:"ollama_url"` // Ollama 后端服务地址，默认为空
 	Timeout         config.Duration `toml:"timeout"`
 	ProxyListenAddr string          `toml:"proxy_listen_addr"` // 代理监听地址
 
@@ -36,8 +37,15 @@ type Instance struct {
 
 // Init 初始化实例
 func (ins *Instance) Init() error {
+	// 如果未启用，直接返回，不进行初始化
+	if !ins.Enabled {
+		log.Printf("I! [ollama] Instance is disabled, skipping initialization")
+		return nil
+	}
+
+	// 检查必填项
 	if ins.OllamaURL == "" {
-		ins.OllamaURL = "http://localhost:11434"
+		return fmt.Errorf("ollama_url is required when enabled=true")
 	}
 
 	if ins.Timeout <= 0 {
@@ -45,7 +53,7 @@ func (ins *Instance) Init() error {
 	}
 
 	if ins.ProxyListenAddr == "" {
-		ins.ProxyListenAddr = ":8000"
+		ins.ProxyListenAddr = ":11435"
 	}
 
 	// 创建上下文
@@ -102,7 +110,8 @@ func (ins *Instance) Drop() {
 
 // Gather 采集指标（定期调用）
 func (ins *Instance) Gather(slist *types.SampleList) {
-	if !ins.initialized {
+	// 如果未启用或未初始化，直接返回
+	if !ins.Enabled || !ins.initialized {
 		return
 	}
 

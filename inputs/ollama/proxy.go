@@ -16,7 +16,7 @@ import (
 // startProxy 启动 HTTP 代理服务器
 func (ins *Instance) startProxy() error {
 	if ins.ProxyListenAddr == "" {
-		ins.ProxyListenAddr = ":8000" // 默认端口
+		ins.ProxyListenAddr = ":11435" // 默认端口
 	}
 
 	mux := http.NewServeMux()
