@@ -147,7 +147,7 @@ release:
 
 dockers:
   - image_templates:
-      - flashcatcloud/categraf:{{ .Tag }}-amd64
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-amd64
     goos: linux
     goarch: amd64
     ids:
@@ -170,12 +170,14 @@ dockers:
       - conf/input.net/net.toml
       - conf/input.kubernetes/kubernetes.toml
       - conf/input.processes/processes.toml
+      - conf/input.ollama/ollama.toml
+      - conf/input.spark_streaming/spark_streaming.toml
     use: buildx
     build_flag_templates:
       - "--platform=linux/amd64"
 
   - image_templates:
-      - flashcatcloud/categraf:slim-{{ .Tag }}-amd64
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-amd64
     goos: linux
     goarch: amd64
     ids:
@@ -198,12 +200,14 @@ dockers:
       - conf/input.net/net.toml
       - conf/input.kubernetes/kubernetes.toml
       - conf/input.processes/processes.toml
+      - conf/input.ollama/ollama.toml
+      - conf/input.spark_streaming/spark_streaming.toml
     use: buildx
     build_flag_templates:
       - "--platform=linux/amd64"
 
   - image_templates:
-      - flashcatcloud/categraf:{{ .Tag }}-arm64v8
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-arm64v8
     goos: linux
     goarch: arm64
     ids:
@@ -226,12 +230,14 @@ dockers:
       - conf/input.net/net.toml
       - conf/input.kubernetes/kubernetes.toml
       - conf/input.processes/processes.toml
+      - conf/input.ollama/ollama.toml
+      - conf/input.spark_streaming/spark_streaming.toml
     use: buildx
     build_flag_templates:
       - "--platform=linux/arm64/v8"
 
   - image_templates:
-      - flashcatcloud/categraf:slim-{{ .Tag }}-arm64v8
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-arm64v8
     goos: linux
     goarch: arm64
     ids:
@@ -254,23 +260,26 @@ dockers:
       - conf/input.net/net.toml
       - conf/input.kubernetes/kubernetes.toml
       - conf/input.processes/processes.toml
+      - conf/input.ollama/ollama.toml
+      - conf/input.spark_streaming/spark_streaming.toml
     use: buildx
     build_flag_templates:
       - "--platform=linux/arm64/v8"
 
 docker_manifests:
-  - name_template: flashcatcloud/categraf:{{ .Tag }}
+  # 华为云 SWR 多架构清单
+  - name_template: swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}
     image_templates:
-      - flashcatcloud/categraf:{{ .Tag }}-amd64
-      - flashcatcloud/categraf:{{ .Tag }}-arm64v8
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-amd64
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-arm64v8
 
-  - name_template: flashcatcloud/categraf:slim-{{ .Tag }}
+  - name_template: swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}
     image_templates:
-      - flashcatcloud/categraf:slim-{{ .Tag }}-amd64
-      - flashcatcloud/categraf:slim-{{ .Tag }}-arm64v8
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-amd64
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-arm64v8
 
-  - name_template: flashcatcloud/categraf:latest
+  - name_template: swr.cn-east-3.myhuaweicloud.com/caapap/categraf:latest
     image_templates:
-      - flashcatcloud/categraf:{{ .Tag }}-amd64
-      - flashcatcloud/categraf:{{ .Tag }}-arm64v8
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-amd64
+      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-arm64v8
 

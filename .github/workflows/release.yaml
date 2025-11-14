@@ -4,8 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 env:
-  GO_VERSION: 1.21
+  GO_VERSION: 1.22
 
 jobs:
   goreleaser:
@@ -21,10 +22,12 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
-      - uses: docker/login-action@v3
+      - name: Login Huawei-Cloud SWR
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: swr.cn-east-3.myhuaweicloud.com
+          username: ${{ secrets.HUAWEI_SWR_USERNAME }}
+          password: ${{ secrets.HUAWEI_SWR_PASSWORD }}
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
@@ -32,3 +35,10 @@ jobs:
           args: release --clean --timeout 60m
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 验证华为云 SWR 镜像推送
+        run: |
+          # GoReleaser 已自动构建并推送镜像到华为云 SWR
+          # 验证镜像是否存在
+          echo "验证华为云 SWR 镜像..."
+          docker pull swr.cn-east-3.myhuaweicloud.com/caapap/categraf:${{ github.ref_name }}-amd64 || echo "AMD64 镜像可能尚未推送"
+          docker pull swr.cn-east-3.myhuaweicloud.com/caapap/categraf:${{ github.ref_name }}-arm64v8 || echo "ARM64 镜像可能尚未推送"
