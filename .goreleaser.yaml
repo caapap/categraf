@@ -49,65 +49,12 @@ builds:
     ldflags:
       - -s -w
       - -X flashcat.cloud/categraf/config.Version={{ .Tag }}-{{.Commit}}
-  - id: linux-slim
-    main: ./
-    binary: categraf
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-    goarch:
-      - amd64
-      - arm64
-    tags:
-      - no_ibex 
-      - no_traces
-      - no_logs
-      - no_prometheus
-    ldflags:
-      - -s -w
-      - -X flashcat.cloud/categraf/config.Version=slim-{{ .Tag }}-{{.Commit}}
-
-  - id: linux-metrics-agent
-    main: ./
-    binary: categraf
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-    goarch:
-      - amd64
-      - arm64
-    tags:
-      - no_ibex 
-      - no_traces
-      - no_logs
-    ldflags:
-      - -s -w
-      - -X flashcat.cloud/categraf/config.Version=slim-{{ .Tag }}-{{.Commit}}
-
-  - id: windows
-    main: ./
-    binary: categraf
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - windows
-    goarch:
-      - amd64
-      - arm64
-    ldflags:
-      - -s -w
-      - -X flashcat.cloud/categraf/config.Version={{ .Tag }}-{{.Commit}}
 
 archives:
   - id: categraf
     builds:
       - linux-amd64-cgo
     format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}-with-cgo-plugin"
     wrap_in_directory: true
     files:
@@ -117,24 +64,8 @@ archives:
     builds:
       - linux-amd64
       - linux-arm64
-      - windows
     format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     name_template: "{{ .ProjectName }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}"
-    wrap_in_directory: true
-    files:
-      - conf/*
-
-  - id: categraf-slim
-    builds:
-      - linux-slim
-    format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
-    name_template: "{{ .ProjectName }}-slim-v{{ .Version }}-{{ .Os }}-{{ .Arch }}"
     wrap_in_directory: true
     files:
       - conf/*
@@ -177,36 +108,6 @@ dockers:
       - "--platform=linux/amd64"
 
   - image_templates:
-      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-amd64
-    goos: linux
-    goarch: amd64
-    ids:
-      - linux-slim
-    dockerfile: docker/Dockerfile.goreleaser
-    extra_files:
-      - docker/entrypoint.sh
-      - docker/nsswitch.conf
-      - conf/config.toml
-      - conf/logs.toml
-      - conf/input.cpu/cpu.toml
-      - conf/input.mem/mem.toml
-      - conf/input.disk/disk.toml
-      - conf/input.diskio/diskio.toml
-      - conf/input.kernel/kernel.toml
-      - conf/input.linux_sysctl_fs/linux_sysctl_fs.toml
-      - conf/input.system/system.toml
-      - conf/input.kernel_vmstat/kernel_vmstat.toml
-      - conf/input.netstat/netstat.toml
-      - conf/input.net/net.toml
-      - conf/input.kubernetes/kubernetes.toml
-      - conf/input.processes/processes.toml
-      - conf/input.ollama/ollama.toml
-      - conf/input.spark_streaming/spark_streaming.toml
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/amd64"
-
-  - image_templates:
       - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-arm64v8
     goos: linux
     goarch: arm64
@@ -236,47 +137,12 @@ dockers:
     build_flag_templates:
       - "--platform=linux/arm64/v8"
 
-  - image_templates:
-      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-arm64v8
-    goos: linux
-    goarch: arm64
-    ids:
-      - linux-metrics-agent
-    dockerfile: docker/Dockerfile.goreleaser.arm64
-    extra_files:
-      - docker/entrypoint.sh
-      - docker/nsswitch.conf
-      - conf/config.toml
-      - conf/logs.toml
-      - conf/input.cpu/cpu.toml
-      - conf/input.mem/mem.toml
-      - conf/input.disk/disk.toml
-      - conf/input.diskio/diskio.toml
-      - conf/input.kernel/kernel.toml
-      - conf/input.linux_sysctl_fs/linux_sysctl_fs.toml
-      - conf/input.system/system.toml
-      - conf/input.kernel_vmstat/kernel_vmstat.toml
-      - conf/input.netstat/netstat.toml
-      - conf/input.net/net.toml
-      - conf/input.kubernetes/kubernetes.toml
-      - conf/input.processes/processes.toml
-      - conf/input.ollama/ollama.toml
-      - conf/input.spark_streaming/spark_streaming.toml
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/arm64/v8"
-
 docker_manifests:
-  # 华为云 SWR 多架构清单
+  # Huawei Cloud SWR multi-architecture manifest
   - name_template: swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}
     image_templates:
       - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-amd64
       - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:{{ .Tag }}-arm64v8
-
-  - name_template: swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}
-    image_templates:
-      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-amd64
-      - swr.cn-east-3.myhuaweicloud.com/caapap/categraf:slim-{{ .Tag }}-arm64v8
 
   - name_template: swr.cn-east-3.myhuaweicloud.com/caapap/categraf:latest
     image_templates:
