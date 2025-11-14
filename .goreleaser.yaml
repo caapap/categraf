@@ -75,6 +75,7 @@ release:
     owner: caapap
     name: categraf
   name_template: "v{{ .Version }}"
+  mode: replace
 
 dockers:
   - image_templates:
