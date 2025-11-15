@@ -1,0 +1,95 @@
+# Huawei Ascend NPU Monitoring Configuration
+# This plugin collects metrics from Huawei Ascend NPU devices (910A, 910B, 310P, etc.)
+# using the ascend-common SDK
+## Support: 910A, 910B, 310P, other Ascend NPU series
+
+[[instances]]
+# Enable or disable NPU monitoring
+# Default: false (must be explicitly enabled)
+enabled = false
+
+# Metric update interval
+# How often to collect metrics from NPU devices
+# Range: 1s - 60s
+# Default: 5s
+update_interval = "5s"
+
+# Cache expiration time
+# How long to keep metrics in cache before they expire
+# Should be longer than update_interval
+# Default: 65s
+cache_time = "65s"
+
+# Custom labels to add to all metrics
+# These labels will be attached to every metric collected by this input
+# [instances.labels]
+# environment = "production"
+# cluster = "gpu-cluster-01"
+# region = "hefei"
+
+## Collected Metrics
+## 
+## Basic Metrics:
+## - npu_temperature           : NPU temperature (°C)
+## - npu_power                 : NPU power consumption (W)
+## - npu_voltage               : NPU voltage (V)
+## - npu_utilization           : AI Core utilization (%)
+## - npu_overall_utilization   : Overall utilization (%)
+## - npu_vector_utilization    : Vector Core utilization (%)
+## - npu_aicore_freq           : AI Core frequency (MHz)
+## - npu_health_status         : Health status (1=Healthy, 0=UnHealthy, -1=Abnormal)
+## - npu_network_health_status : Network health status
+##
+## Memory Metrics:
+## - npu_hbm_total_mb          : HBM total memory (MB)
+## - npu_hbm_used_mb           : HBM used memory (MB)
+## - npu_hbm_free_mb           : HBM free memory (MB)
+## - npu_hbm_utilization       : HBM memory utilization (%)
+## - npu_ddr_total_mb          : DDR total memory (MB)
+## - npu_ddr_used_mb           : DDR used memory (MB)
+## - npu_ddr_free_mb           : DDR free memory (MB)
+## - npu_ddr_utilization       : DDR memory utilization (%)
+##
+## Process Metrics:
+## - npu_process_count         : Number of processes using the NPU
+## - npu_process_memory_mb     : Memory used by each process (MB)
+##
+## Error Metrics:
+## - npu_error_code            : Error codes reported by the device
+##
+## Info Metrics:
+## - npu_info                  : Device information (value=1, with labels)
+## - npu_chip_count            : Total number of NPU chips
+## - npu_chips_per_card        : Number of chips per card
+##
+## Status Metrics:
+## - npu_up                    : Scraper status (1=up, 0=down)
+## - npu_scrape_duration_seconds : Time taken to scrape metrics
+##
+## Labels:
+## All metrics include the following labels:
+## - device_id  : Physical device ID
+## - logic_id   : Logical device ID
+## - card_id    : Card ID
+## - phy_id     : Physical ID
+## - vdev_id    : Virtual device ID (for vNPU, if applicable)
+##
+## Additional labels for npu_info metric:
+## - chip_name      : NPU chip name (e.g., "Ascend910")
+## - chip_type      : NPU chip type
+## - serial_number  : Device serial number
+## - pcie_bus       : PCIe bus information
+
+## Requirements:
+## 1. Huawei Ascend NPU hardware installed
+## 2. Ascend driver and toolkit installed
+## 3. ascend-common SDK available
+## 4. Proper permissions to access NPU devices
+
+## Troubleshooting:
+## If NPU monitoring fails to initialize:
+## 1. Check if NPU devices are detected: npu-smi info
+## 2. Verify driver installation: cat /proc/driver/ascend/version
+## 3. Check Categraf logs for detailed error messages
+## 4. Ensure the process has permission to access /dev/davinci* devices
+

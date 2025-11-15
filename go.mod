@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.24.10
 
 require (
+	ascend-common v0.0.0
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137
 	github.com/chai2010/winsvc v0.0.0-20200705094454-db7ec320025c
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
@@ -363,6 +364,7 @@ require (
 )
 
 replace (
+	ascend-common => ./pkg/ascend-common
 	github.com/googleapis/google-cloud-go/storage => cloud.google.com/go/storage v1.30.1
 	github.com/prometheus/client_golang => github.com/flashcatcloud/client_golang v1.12.2-0.20220704074148-3b31f0c90903
 	go.opentelemetry.io/collector => github.com/open-telemetry/opentelemetry-collector v0.54.0
